@@ -45,7 +45,16 @@ class UnifiedApp(ctk.CTk):
         frame.pack(pady=20, padx=20, fill="both", expand=True)
 
         ctk.CTkLabel(frame, text="Apply Watermark (Overlay)", font=("", 16, "bold")).pack(pady=(20, 10))
-        ctk.CTkLabel(frame, text=f"Ensure '{WATERMARK_FILENAME}' is in the folder.", wraplength=400, text_color="gray").pack(pady=10)
+        ctk.CTkLabel(frame, text=f"Select a watermark image before processing.", wraplength=400, text_color="gray").pack(pady=10)
+
+        # watermark file selection
+        self.watermark_path = ctk.StringVar(value=WATERMARK_FILENAME)
+        frame_wm = ctk.CTkFrame(frame, fg_color="transparent")
+        frame_wm.pack(fill="x", pady=(0, 10))
+        ctk.CTkLabel(frame_wm, text="Watermark Image:").pack(side="left", padx=(0, 5))
+        self.entry_wm = ctk.CTkEntry(frame_wm, textvariable=self.watermark_path, state="readonly")
+        self.entry_wm.pack(side="left", fill="x", expand=True, padx=(0, 10))
+        ctk.CTkButton(frame_wm, text="Select", width=80, command=self.select_watermark_file).pack(side="right")
 
         self.btn_watermark = ctk.CTkButton(frame, text="Select Video and Process", command=self.start_watermark_thread, height=40)
         self.btn_watermark.pack(pady=20, padx=50, fill="x")
@@ -53,9 +62,20 @@ class UnifiedApp(ctk.CTk):
         self.lbl_status_watermark = ctk.CTkLabel(frame, text="")
         self.lbl_status_watermark.pack(pady=5)
 
+    def select_watermark_file(self):
+        path = filedialog.askopenfilename(title="Select watermark image", filetypes=[("PNG Images", "*.png"), ("All", "*.*")])
+        if path:
+            self.watermark_path.set(path)
+            # update watermark path on video_processor
+            self.video_processor.watermark_image_path = path
+
     def start_watermark_thread(self):
         video_path = filedialog.askopenfilename(title="Select a video file", filetypes=(("Videos", "*.mp4 *.avi"), ("All", "*.*")))
-        if not video_path: return
+        if not video_path:
+            return
+
+        # updates video_processor BEFORE processing
+        self.video_processor.watermark_image_path = self.watermark_path.get()
 
         self.btn_watermark.configure(state="disabled", text="Processing...")
         self.lbl_status_watermark.configure(text="Applying overlay... (This may take a while)", text_color="blue")
