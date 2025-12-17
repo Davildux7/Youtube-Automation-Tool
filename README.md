@@ -39,7 +39,7 @@ python main.py
 
 ### How to use the tabs:
 
-*   **Watermark:** Select a video file. The tool will overlay `watermark.png` and save the result.
+*   **Watermark:** Select a video file and the watermark you want. The tool will overlay the watermark and save the result.
 *   **Whisper Subtitles:** Enter your API Key (if not in `.env`), select a video, and click "Generate Subtitles". An `.srt` file will be created in the same folder.
 *   **YouTube Hunter:** Enter search terms (one per line), set your filters (Views, Days Ago), and click "Start Hunt". Results are saved to `youtube_leads.csv`.
 
